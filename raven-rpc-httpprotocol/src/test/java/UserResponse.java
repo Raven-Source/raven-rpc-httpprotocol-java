@@ -2,9 +2,11 @@ import raven.rpc.contractmodel.DefaultResponseModel;
 import raven.serializer.withJackson.annotations.JsonPropertyFormat;
 import raven.serializer.withJackson.annotations.JsonPropertyFormatType;
 
+import java.util.ArrayList;
+
 
 @JsonPropertyFormat(JsonPropertyFormatType.PascalCase)
-public class UserResponse extends DefaultResponseModel<User, Integer>{
+class UserResponse extends DefaultResponseModel<User, Integer>{
 
     @Override
     public User getData() {
@@ -15,4 +17,9 @@ public class UserResponse extends DefaultResponseModel<User, Integer>{
     public void setData(User user) {
         super.setData(user);
     }
+}
+
+@JsonPropertyFormat(JsonPropertyFormatType.PascalCase)
+class UserListResponse extends ArrayList<User>{
+
 }

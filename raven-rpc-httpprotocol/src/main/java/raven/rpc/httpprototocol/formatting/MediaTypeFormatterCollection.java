@@ -1,9 +1,8 @@
-package formatting;
+package raven.rpc.httpprototocol.formatting;
 
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.Args;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

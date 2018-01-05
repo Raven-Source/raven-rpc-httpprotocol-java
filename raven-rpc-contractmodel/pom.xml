@@ -5,13 +5,13 @@
     <parent>
         <artifactId>raven</artifactId>
         <groupId>org.raven</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.raven.rpc.contractmodel</groupId>
     <artifactId>raven-rpc-contractmodel</artifactId>
-
+    <version>0.0.1</version>
 
     <build>
         <plugins>

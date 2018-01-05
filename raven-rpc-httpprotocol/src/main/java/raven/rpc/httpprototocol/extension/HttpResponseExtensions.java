@@ -1,6 +1,8 @@
-import entity.ObjectHttpEntity;
-import formatting.MediaTypeFormatter;
-import formatting.MediaTypeFormatterCollection;
+package raven.rpc.httpprototocol.extension;
+
+import raven.rpc.httpprototocol.entity.ObjectHttpEntity;
+import raven.rpc.httpprototocol.formatting.MediaTypeFormatter;
+import raven.rpc.httpprototocol.formatting.MediaTypeFormatterCollection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.Args;
@@ -18,26 +20,48 @@ public class HttpResponseExtensions {
         return HttpResponseExtensions._defaultMediaTypeFormatterCollection;
     }
 
-    public static <T> T readAs(Class<T> clazz, HttpResponse httpResponse) throws IOException {
-        return readAs(clazz, httpResponse, HttpResponseExtensions.getDefaultMediaTypeFormatterCollection());
+    /**
+     * payload方式的HttpResponse, read成POJO
+     *
+     * @param clazz
+     * @param httpEntity
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    public static <T> T readAs(Class<T> clazz, HttpEntity httpEntity) throws IOException {
+        return readAs(clazz, httpEntity, HttpResponseExtensions.getDefaultMediaTypeFormatterCollection());
     }
 
-    public static <T> T readAs(Class<T> clazz, HttpResponse httpResponse, List<MediaTypeFormatter> formatters) throws IOException {
-        if (httpResponse == null)
-            Args.notNull(httpResponse, "httpResponse");
+    /**
+     * payload方式的HttpResponse, read成POJO
+     *
+     * @param clazz
+     * @param httpEntity
+     * @param formatters
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    public static <T> T readAs(Class<T> clazz, HttpEntity httpEntity, List<MediaTypeFormatter> formatters) throws IOException {
+        if (httpEntity == null)
+            Args.notNull(httpEntity, "httpEntity");
         if (clazz == null)
             Args.notNull(clazz, "clazz");
         if (formatters == null)
             Args.notNull(formatters, "formatters");
 
-        HttpEntity httpEntity = httpResponse.getEntity();
         if (httpEntity.getClass().isAssignableFrom(ObjectHttpEntity.class)) {
             ObjectHttpEntity objectHttpEntity = (ObjectHttpEntity) httpEntity;
-            if (objectHttpEntity != null && objectHttpEntity.getData() != null && clazz.isAssignableFrom(objectHttpEntity.getData().getClass()))
-                return (T) objectHttpEntity.getData();
+            if (objectHttpEntity != null) {
+                Object value = objectHttpEntity.getValue();
+                if (value != null && clazz.isAssignableFrom(value.getClass())) {
+                    return (T) value;
+                }
+            }
         }
 
-        String mediaType = httpResponse.getEntity().getContentType().getValue().trim().toLowerCase();
+        String mediaType = httpEntity.getContentType().getValue().trim().toLowerCase();
 //        if(mediaType == null){
 //
 //        }
@@ -50,6 +74,14 @@ public class HttpResponseExtensions {
     }
 
 
+    /**
+     * @param clazz
+     * @param httpEntity
+     * @param formatter
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     private static <T> T readAsCore(Class<T> clazz, HttpEntity httpEntity, MediaTypeFormatter formatter) throws IOException {
         return formatter.readFrom(clazz, httpEntity);
     }

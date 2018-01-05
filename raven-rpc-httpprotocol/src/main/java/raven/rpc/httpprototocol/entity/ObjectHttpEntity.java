@@ -1,6 +1,6 @@
-package entity;
+package raven.rpc.httpprototocol.entity;
 
-import formatting.MediaTypeFormatter;
+import raven.rpc.httpprototocol.formatting.MediaTypeFormatter;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.util.Args;
 import raven.serializer.DataSerializer;
@@ -8,29 +8,48 @@ import raven.serializer.withJackson.JacksonSerializer;
 
 import java.io.*;
 
+/**
+ * POJO对象HttpEntity，用于payload方式
+ *
+ * @param <T>
+ */
 public class ObjectHttpEntity<T> extends AbstractHttpEntity {
 
-    private final T data;
+    private final T value;
     private final MediaTypeFormatter formatter;
 
     private final byte[] buffer;
     private final long length;
 
-
     private DataSerializer serializer = new JacksonSerializer();
 
-    public T getData() {
-        return data;
+    /**
+     * 获取value
+     *
+     * @return
+     */
+    public T getValue() {
+        return value;
     }
 
+    /**
+     * 获取formatter
+     *
+     * @return
+     */
     public MediaTypeFormatter getFormatter() {
         return formatter;
     }
 
-    public ObjectHttpEntity(T data, MediaTypeFormatter formatter) throws IOException {
-        this.data = data;
+    /**
+     * @param value     POJO对象
+     * @param formatter {@see MediaTypeFormatter}
+     * @throws IOException
+     */
+    public ObjectHttpEntity(T value, MediaTypeFormatter formatter) throws IOException {
+        this.value = value;
         this.formatter = formatter;
-        this.buffer = formatter.writeToBytes(data);
+        this.buffer = formatter.writeToBytes(value);
         this.length = buffer.length;
     }
 

@@ -1,4 +1,4 @@
-package exception;
+package raven.rpc.httpprototocol.exception;
 
 /**
  * 远程调用超时异常

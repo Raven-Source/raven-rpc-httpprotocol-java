@@ -1,3 +1,5 @@
+package raven.rpc.httpprototocol;
+
 public class MediaType {
 
     public static final String bytes = "application/bytes";

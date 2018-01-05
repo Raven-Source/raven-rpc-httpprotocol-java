@@ -1,4 +1,4 @@
-package formatting;
+package raven.rpc.httpprototocol.formatting;
 
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
@@ -9,6 +9,10 @@ import raven.serializer.withJackson.JacksonSerializer;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * 提供payload方式的formatter
+ * json格式 {@see raven.rpc.httpprototocol.MediaType.json}
+ */
 public class JsonMediaTypeFormatter extends MediaTypeFormatter {
 
     private DataSerializer serializer;
@@ -27,7 +31,6 @@ public class JsonMediaTypeFormatter extends MediaTypeFormatter {
         getSupportedContentTypes().add(defaultContentType);
         getSupportedCharsets().add(defaultContentType.getCharset());
         serializer = new JacksonSerializer();
-
     }
 
     @Override

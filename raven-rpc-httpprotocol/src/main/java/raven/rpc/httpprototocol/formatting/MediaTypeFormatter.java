@@ -1,4 +1,4 @@
-package formatting;
+package raven.rpc.httpprototocol.formatting;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
