@@ -1,56 +1,34 @@
 package raven.rpc.contractmodel;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultResponseModel<TData, TCode> implements FullResponseModel<TData, TCode> {
 
+    @Getter
+    @Setter
     private TCode code;
 
+    @Getter
+    @Setter
     private TData data;
 
+    @Getter
+    @Setter
     private List<KeyValue<String, String>> extension;
 
+    @Getter
+    @Setter
     private String message;
 
     //private Class<? extends TCode> codeClass;
 
-    @Override
-    public TCode getCode() {
-        return code;
-    }
-
-    @Override
-    public void setCode(TCode code) {
-        this.code = code;
-    }
-
-    @Override
-    public TData getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(TData data) {
-        this.data = data;
-    }
-
-    @Override
-    public List<KeyValue<String, String>> getExtension() {
-        return extension;
-    }
-
-    public void setExtension(List<KeyValue<String, String>> extension) {
-        this.extension = extension;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
+    /**
+     * 构造函数
+     */
     public DefaultResponseModel() {
         extension = new ArrayList<>();
     }

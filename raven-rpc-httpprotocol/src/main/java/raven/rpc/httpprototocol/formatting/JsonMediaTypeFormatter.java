@@ -1,5 +1,8 @@
 package raven.rpc.httpprototocol.formatting;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.Args;
@@ -15,16 +18,13 @@ import java.io.InputStream;
  */
 public class JsonMediaTypeFormatter extends MediaTypeFormatter {
 
+    @Getter(AccessLevel.PUBLIC)
+    @Setter(AccessLevel.PROTECTED)
     private DataSerializer serializer;
 
-    protected DataSerializer getSerializer() {
-        return serializer;
-    }
-
-    public void setSerializer(DataSerializer serializer) {
-        this.serializer = serializer;
-    }
-
+    /**
+     *
+     */
     public JsonMediaTypeFormatter() {
         super();
         defaultContentType = ContentType.APPLICATION_JSON;

@@ -7,17 +7,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ *
+ */
 public class MediaTypeFormatterCollection extends ArrayList<MediaTypeFormatter> {
 
+    /**
+     * Constructor
+     */
     public MediaTypeFormatterCollection() {
         this(MediaTypeFormatterCollection.createDefaultFormatters());
     }
 
+    /**
+     * Constructor
+     *
+     * @param formatters
+     */
     public MediaTypeFormatterCollection(List<MediaTypeFormatter> formatters) {
         this.verifyAndSetFormatters(formatters);
     }
 
-
+    /**
+     * @param mediaType
+     * @return
+     */
     public MediaTypeFormatter FindReader(String mediaType) {
 
         for (MediaTypeFormatter mediaTypeFormatter : this) {
@@ -32,13 +46,18 @@ public class MediaTypeFormatterCollection extends ArrayList<MediaTypeFormatter> 
 
     }
 
-
+    /**
+     * @return
+     */
     private static List<MediaTypeFormatter> createDefaultFormatters() {
         return Arrays.asList(new MediaTypeFormatter[]{
                 (MediaTypeFormatter) new JsonMediaTypeFormatter()
         });
     }
 
+    /**
+     * @param formatters
+     */
     private void verifyAndSetFormatters(List<MediaTypeFormatter> formatters) {
         if (formatters == null)
             Args.notNull(formatters, "formatters");

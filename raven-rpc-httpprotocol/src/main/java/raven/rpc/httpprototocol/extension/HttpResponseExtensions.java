@@ -10,6 +10,9 @@ import org.apache.http.util.Args;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ *
+ */
 public class HttpResponseExtensions {
 
     private static MediaTypeFormatterCollection _defaultMediaTypeFormatterCollection;

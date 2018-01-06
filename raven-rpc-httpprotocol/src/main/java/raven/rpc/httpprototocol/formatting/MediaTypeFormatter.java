@@ -1,5 +1,7 @@
 package raven.rpc.httpprototocol.formatting;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -13,8 +15,12 @@ import java.util.List;
 
 public abstract class MediaTypeFormatter {
 
+    @Getter(AccessLevel.PUBLIC)
     private final List<Charset> supportedCharsets;
+
+    @Getter(AccessLevel.PUBLIC)
     private final List<ContentType> supportedContentTypes;
+
     protected ContentType defaultContentType;
 
     protected MediaTypeFormatter() {
@@ -22,25 +28,30 @@ public abstract class MediaTypeFormatter {
         supportedContentTypes = new ArrayList<>();
     }
 
+    /**
+     * Constructor
+     *
+     * @param mediaTypeFormatter
+     */
     protected MediaTypeFormatter(MediaTypeFormatter mediaTypeFormatter) {
         supportedCharsets = mediaTypeFormatter.supportedCharsets;
         supportedContentTypes = mediaTypeFormatter.supportedContentTypes;
     }
-
+/*
     protected List<Charset> getSupportedCharsets() {
         return supportedCharsets;
     }
 
     protected List<ContentType> getSupportedContentTypes() {
         return supportedContentTypes;
-    }
+    }*/
 
 
     public Header getAcceptHeader() {
         return new BasicHeader(HttpHeaders.ACCEPT, defaultContentType.toString());
     }
 
-    public Header getContentTypeHeader(){
+    public Header getContentTypeHeader() {
         return new BasicHeader(HttpHeaders.CONTENT_TYPE, defaultContentType.toString());
     }
 

@@ -1,21 +1,16 @@
 package raven.rpc.contractmodel;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  */
 public class DefaultRequestModel implements RequestModel<Header> {
 
+    @Getter
+    @Setter
     private Header header;
-
-    @Override
-    public Header getHeader() {
-        return header;
-    }
-
-    @Override
-    public void setHeader(Header header) {
-        this.header = header;
-    }
 
     /**
      *

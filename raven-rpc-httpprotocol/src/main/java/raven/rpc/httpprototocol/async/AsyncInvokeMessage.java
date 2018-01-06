@@ -5,6 +5,9 @@ import raven.rpc.httpprototocol.InvokeMessage;
 
 import java.util.Map;
 
+/**
+ * @param <TData>
+ */
 public class AsyncInvokeMessage<TData> extends InvokeMessage<TData> {
 
     private int timeout;
