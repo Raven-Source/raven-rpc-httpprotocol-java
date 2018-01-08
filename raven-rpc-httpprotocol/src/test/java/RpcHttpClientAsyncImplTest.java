@@ -70,7 +70,6 @@ public class RpcHttpClientAsyncImplTest {
         user.Name = "好学生";
         user.ID = 123;
 
-        httpClient = new RpcHttpClientAsyncImpl(domain, MediaType.json);
 //        CompletableFuture<UserResponse> future = httpClient.invokeAsync(url, user, UserResponse.class);
         AsyncInvokeMessage<User> invokeMessage
                 = new AsyncInvokeMessage<User>()

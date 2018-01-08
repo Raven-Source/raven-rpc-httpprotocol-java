@@ -8,10 +8,8 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import raven.rpc.httpprototocol.entity.ObjectHttpEntity;
 import raven.rpc.httpprototocol.exception.ExceptionOptimize;
-import raven.rpc.httpprototocol.extension.HttpResponseExtensions;
+import raven.rpc.httpprototocol.extension.HttpEntitys;
 
 import java.io.IOException;
 import java.util.Map;
@@ -52,7 +50,6 @@ public class RpcHttpClientImpl
     }
 
     /**
-     *
      * @param invokeMessage
      * @throws IOException
      * @throws TimeoutException
@@ -65,7 +62,6 @@ public class RpcHttpClientImpl
     }
 
     /**
-     *
      * @param resultClazz
      * @param invokeMessage
      * @param <TResult>
@@ -81,7 +77,6 @@ public class RpcHttpClientImpl
     }
 
     /**
-     *
      * @param resultClazz
      * @param url
      * @param urlParameters
@@ -99,7 +94,6 @@ public class RpcHttpClientImpl
     }
 
     /**
-     *
      * @param resultClazz
      * @param url
      * @param contentData
@@ -123,31 +117,31 @@ public class RpcHttpClientImpl
 
         try {
             httpResponse = client.execute(_httpHost, httpRequest);
+
+            StatusLine statusLine = httpResponse.getStatusLine();
+            if (statusLine != null) {
+                int statusCode = statusLine.getStatusCode();
+                if (statusCode < 200 || statusCode >= 300) {
+                    throw ExceptionOptimize.createHttpException(statusLine);
+                }
+            }
+
+            HttpEntity httpEntity = httpResponse.getEntity();
+            if (httpEntity == null) {
+                return null;
+            }
+
+            if (resultClazz == Void.TYPE) {
+                return null;
+            } else {
+                return HttpEntitys.readAs(resultClazz, httpEntity);
+            }
+
         } catch (Exception ex) {
             throw ex;
         } finally {
             if (httpResponse != null) httpResponse.close();
         }
-
-        StatusLine statusLine = httpResponse.getStatusLine();
-        if (statusLine != null) {
-            int statusCode = statusLine.getStatusCode();
-            if (statusCode < 200 || statusCode >= 300) {
-                throw ExceptionOptimize.createHttpException(statusLine);
-            }
-        }
-
-        HttpEntity httpEntity = httpResponse.getEntity();
-        if (httpEntity == null) {
-            return null;
-        }
-
-        if (resultClazz == Void.TYPE) {
-            return null;
-        } else {
-            return HttpResponseExtensions.readAs(resultClazz, httpEntity);
-        }
-
     }
 
     /**
@@ -158,6 +152,8 @@ public class RpcHttpClientImpl
         HttpClientBuilder builder = HttpClientBuilder.create().setDefaultHeaders(_defaultHeaders);
         RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(_timeout).setConnectionRequestTimeout(_timeout).build();
         builder.setDefaultRequestConfig(requestConfig);
+        builder.setMaxConnTotal(200);
+        builder.setMaxConnPerRoute(200);
 
         return builder.build();
     }

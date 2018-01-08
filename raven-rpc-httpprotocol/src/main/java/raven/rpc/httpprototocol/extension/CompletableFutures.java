@@ -12,7 +12,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 /**
  * CompletableFuture Extensions
  */
-public class CompletableFutureExtensions {
+public class CompletableFutures {
 
 
     /**

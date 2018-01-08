@@ -4,7 +4,6 @@ import raven.rpc.httpprototocol.entity.ObjectHttpEntity;
 import raven.rpc.httpprototocol.formatting.MediaTypeFormatter;
 import raven.rpc.httpprototocol.formatting.MediaTypeFormatterCollection;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.util.Args;
 
 import java.io.IOException;
@@ -13,27 +12,27 @@ import java.util.List;
 /**
  *
  */
-public class HttpResponseExtensions {
+public class HttpEntitys {
 
     private static MediaTypeFormatterCollection _defaultMediaTypeFormatterCollection;
 
     private static MediaTypeFormatterCollection getDefaultMediaTypeFormatterCollection() {
-        if (HttpResponseExtensions._defaultMediaTypeFormatterCollection == null)
-            HttpResponseExtensions._defaultMediaTypeFormatterCollection = new MediaTypeFormatterCollection();
-        return HttpResponseExtensions._defaultMediaTypeFormatterCollection;
+        if (HttpEntitys._defaultMediaTypeFormatterCollection == null)
+            HttpEntitys._defaultMediaTypeFormatterCollection = new MediaTypeFormatterCollection();
+        return HttpEntitys._defaultMediaTypeFormatterCollection;
     }
 
     /**
-     * payload方式的HttpResponse, read成POJO
+     * payload方式的HttpResponse, read成POJO,  {@link HttpEntity}
      *
      * @param clazz
      * @param httpEntity
      * @param <T>
-     * @return
+     * @return T
      * @throws IOException
      */
     public static <T> T readAs(Class<T> clazz, HttpEntity httpEntity) throws IOException {
-        return readAs(clazz, httpEntity, HttpResponseExtensions.getDefaultMediaTypeFormatterCollection());
+        return readAs(clazz, httpEntity, HttpEntitys.getDefaultMediaTypeFormatterCollection());
     }
 
     /**
@@ -71,7 +70,7 @@ public class HttpResponseExtensions {
 //        MediaTypeConstants.ApplicationOctetStreamMediaType;
         MediaTypeFormatter reader = new MediaTypeFormatterCollection(formatters).FindReader(mediaType);
         if (reader != null)
-            return HttpResponseExtensions.readAsCore(clazz, httpEntity, reader);
+            return HttpEntitys.readAsCore(clazz, httpEntity, reader);
 
         return null;
     }
