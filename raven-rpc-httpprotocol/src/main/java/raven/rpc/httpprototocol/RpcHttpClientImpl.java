@@ -1,9 +1,7 @@
 package raven.rpc.httpprototocol;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.StatusLine;
+import lombok.Getter;
+import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,8 +10,12 @@ import raven.rpc.httpprototocol.exception.ExceptionOptimize;
 import raven.rpc.httpprototocol.extension.HttpEntitys;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class RpcHttpClientImpl
         extends AbstractRpcHttpClient
@@ -115,9 +117,19 @@ public class RpcHttpClientImpl
         HttpRequest httpRequest = createHttpRequest(url, contentData, urlParameters, httpMethod);
         CloseableHttpResponse httpResponse = null;
 
+        RpcContext rpcContext = new RpcContext();
+        rpcContext.setRequestModel(contentData);
+
+        //onRequestEvents
+        onRequestEvents(httpRequest, rpcContext);
+
         try {
             httpResponse = client.execute(_httpHost, httpRequest);
 
+            //onResponseEvents
+            onResponseEvents(httpResponse, rpcContext);
+
+            //处理状态
             StatusLine statusLine = httpResponse.getStatusLine();
             if (statusLine != null) {
                 int statusCode = statusLine.getStatusCode();
@@ -126,6 +138,7 @@ public class RpcHttpClientImpl
                 }
             }
 
+            //获取HttpEntity
             HttpEntity httpEntity = httpResponse.getEntity();
             if (httpEntity == null) {
                 return null;
@@ -134,6 +147,7 @@ public class RpcHttpClientImpl
             if (resultClazz == Void.TYPE) {
                 return null;
             } else {
+                // as TResult
                 return HttpEntitys.readAs(resultClazz, httpEntity);
             }
 
@@ -156,5 +170,16 @@ public class RpcHttpClientImpl
         builder.setMaxConnPerRoute(200);
 
         return builder.build();
+    }
+
+
+    @Override
+    protected void finalize() throws java.lang.Throwable {
+
+        super.finalize();
+        if (_httpClient != null) {
+            _httpClient.close();
+        }
+
     }
 }

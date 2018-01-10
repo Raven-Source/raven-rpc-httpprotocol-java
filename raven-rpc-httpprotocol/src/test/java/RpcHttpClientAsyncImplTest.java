@@ -6,6 +6,8 @@ import raven.rpc.httpprototocol.HttpMethod;
 import raven.rpc.httpprototocol.InvokeMessage;
 import raven.rpc.httpprototocol.MediaType;
 import raven.rpc.httpprototocol.async.AsyncInvokeMessage;
+import raven.rpc.httpprototocol.async.RpcHttpClientAsync;
+import raven.rpc.httpprototocol.async.RpcHttpClientAsyncBuilder;
 import raven.rpc.httpprototocol.async.RpcHttpClientAsyncImpl;
 
 import java.nio.charset.Charset;
@@ -19,11 +21,13 @@ public class RpcHttpClientAsyncImplTest {
     private final String DEFAULT_ENCODING = Charset.defaultCharset()
             .name();
 
-    RpcHttpClientAsyncImpl httpClient;
+    RpcHttpClientAsync httpClient;
 
     @Before
     public void before() {
-        httpClient = new RpcHttpClientAsyncImpl(domain, MediaType.json);
+
+        httpClient = new RpcHttpClientAsyncBuilder().host(domain).mediaType(MediaType.json).build();
+        //httpClient = new RpcHttpClientAsyncImpl(domain, MediaType.json);
     }
 
     @Test(expected = TimeoutException.class)

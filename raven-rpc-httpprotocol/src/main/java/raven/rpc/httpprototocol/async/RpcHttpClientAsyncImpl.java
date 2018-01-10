@@ -6,6 +6,7 @@ import org.apache.http.nio.conn.NHttpClientConnectionManager;
 import raven.rpc.httpprototocol.AbstractRpcHttpClient;
 import raven.rpc.httpprototocol.HttpMethod;
 import raven.rpc.httpprototocol.MediaType;
+import raven.rpc.httpprototocol.RpcContext;
 import raven.rpc.httpprototocol.exception.ExceptionOptimize;
 import raven.rpc.httpprototocol.extension.CompletableFutures;
 import raven.rpc.httpprototocol.extension.HttpEntitys;
@@ -122,10 +123,19 @@ public class RpcHttpClientAsyncImpl
 
         final CompletableFuture<TResult> completableFuture = new CompletableFuture<>();
 
+        RpcContext rpcContext = new RpcContext();
+        rpcContext.setRequestModel(contentData);
+
+        //onRequestEvents
+        onRequestEvents(httpRequest, rpcContext);
+
         //http异步执行
         client.execute(_httpHost, httpRequest, CompletableFutures.shiftToFutureCallback(completableFuture
                 //处理httpResponse，并给到completableFuture
                 , httpResponse -> {
+
+                    //onResponseEvents
+                    onResponseEvents(httpResponse, rpcContext);
 
                     StatusLine statusLine = httpResponse.getStatusLine();
                     if (statusLine != null) {
@@ -170,6 +180,17 @@ public class RpcHttpClientAsyncImpl
         builder.setMaxConnPerRoute(200);
 
         return builder.build();
+    }
+
+
+    @Override
+    protected void finalize() throws java.lang.Throwable {
+
+        super.finalize();
+        if (_asyncHttpClient != null) {
+            _asyncHttpClient.close();
+        }
+
     }
 
 

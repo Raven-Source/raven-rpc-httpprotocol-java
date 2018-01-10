@@ -1,19 +1,20 @@
 package raven.rpc.httpprototocol;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
+import lombok.Getter;
+import org.apache.http.*;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.util.Args;
 import raven.rpc.httpprototocol.entity.ObjectHttpEntity;
 import raven.rpc.httpprototocol.formatting.JsonMediaTypeFormatter;
 import raven.rpc.httpprototocol.formatting.MediaTypeFormatter;
+import raven.rpc.httpprototocol.function.Action;
+import raven.rpc.httpprototocol.function.Action2;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * AbstractRpcHttpClient
@@ -23,7 +24,7 @@ public abstract class AbstractRpcHttpClient {
     protected static final int DEFALUT_TIMEOUT = 10000;
 
     protected int _timeout;
-    //private String _mediaType;
+    private String _mediaType;
     protected MediaTypeFormatter _mediaTypeFormatter;
 
     protected Collection<Header> _defaultHeaders;
@@ -40,10 +41,13 @@ public abstract class AbstractRpcHttpClient {
 
     public AbstractRpcHttpClient(final String host, final String mediaType, final int timeout) {
 
+        Args.notNull(host, "host");
+
+        _mediaType = mediaType == null || mediaType.isEmpty() ? MediaType.json : mediaType;
         _timeout = timeout > 0 ? timeout : DEFALUT_TIMEOUT;
 
         //_mediaType = mediaType;
-        _mediaTypeFormatter = createMediaTypeFormatter(mediaType);
+        _mediaTypeFormatter = createMediaTypeFormatter(_mediaType);
 
         _defaultHeaders = new ArrayList<>();
         _defaultHeaders.add(_mediaTypeFormatter.getAcceptHeader());
@@ -86,7 +90,6 @@ public abstract class AbstractRpcHttpClient {
     }
 
     /**
-     *
      * @param mediaType
      * @return
      */
@@ -126,12 +129,15 @@ public abstract class AbstractRpcHttpClient {
      */
     protected String createUrlParams(Map<String, String> urlParameters, String baseUrl) {
 
-        if (urlParameters == null || urlParameters.size() == 0) {
+        if (urlParameters == null) {
+            urlParameters = new HashMap<>();
+        }
+        addDefaultUrlParameters(urlParameters);
+        if (urlParameters.size() == 0) {
             return baseUrl;
         }
 
         StringBuilder buffer = null;
-
         buffer = new StringBuilder();
         int i = 0;
 
@@ -158,5 +164,97 @@ public abstract class AbstractRpcHttpClient {
         }
 
         return baseUrl;
+    }
+
+    /**
+     * @param urlParameters
+     * @return
+     */
+    private Map<String, String> addDefaultUrlParameters(final Map<String, String> urlParameters) {
+
+        if (defaultUrlParametersHandlers != null) {
+            for (Action<Map<String, String>> handler : defaultUrlParametersHandlers) {
+                handler.invoke(urlParameters);
+            }
+        }
+
+        return urlParameters;
+    }
+
+    @Getter
+    private List<Action2<HttpRequest, RpcContext>> onRequestEvents;
+
+    @Getter
+    private List<Action2<HttpResponse, RpcContext>> onResponseEvents;
+
+    @Getter
+    private List<Action<Map<String, String>>> defaultUrlParametersHandlers;
+
+    /**
+     * 请求前
+     *
+     * @param event
+     */
+    public void onRequest(final Action2<HttpRequest, RpcContext> event) {
+        Args.notNull(event, "event");
+
+        if (onRequestEvents == null) {
+            onRequestEvents = new ArrayList<>();
+        }
+        onRequestEvents.add(event);
+    }
+
+    /**
+     *
+     * @param request
+     * @param rpcContext
+     */
+    protected void onRequestEvents(final HttpRequest request, final RpcContext rpcContext) {
+        if (onRequestEvents != null) {
+            for (Action2<HttpRequest, RpcContext> event : onRequestEvents) {
+                event.invoke(request, rpcContext);
+            }
+        }
+    }
+
+    /**
+     * 响应后
+     *
+     * @param event
+     */
+    public void onResponse(final Action2<HttpResponse, RpcContext> event) {
+
+        Args.notNull(event, "event");
+        if (onResponseEvents == null) {
+            onResponseEvents = new ArrayList<>();
+        }
+        onResponseEvents.add(event);
+    }
+
+    /**
+     *
+     * @param response
+     * @param rpcContext
+     */
+    protected void onResponseEvents(final HttpResponse response, final RpcContext rpcContext) {
+        if (onResponseEvents != null) {
+            for (Action2<HttpResponse, RpcContext> event : onResponseEvents) {
+                event.invoke(response, rpcContext);
+            }
+        }
+    }
+
+    /**
+     * 处理url参数，可以添加默认的ur参数处理
+     *
+     * @param event
+     */
+    public void defaultUrlParametersHandler(final Action<Map<String, String>> event) {
+        Args.notNull(event, "event");
+
+        if (defaultUrlParametersHandlers == null) {
+            defaultUrlParametersHandlers = new ArrayList<>();
+        }
+        defaultUrlParametersHandlers.add(event);
     }
 }
