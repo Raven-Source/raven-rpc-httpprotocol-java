@@ -174,7 +174,11 @@ public class RpcHttpClientAsyncImpl
     private CloseableHttpAsyncClient initHttpClient() {
 
         HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create().setDefaultHeaders(_defaultHeaders);
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(_timeout).setConnectionRequestTimeout(_timeout).build();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(_timeout)
+                .setConnectionRequestTimeout(_timeout)
+                .setSocketTimeout(_timeout)
+                .build();
         builder.setDefaultRequestConfig(requestConfig);
 //        DefaultConnectingIOReactor defaultConnectingIOReactor = new DefaultConnectingIOReactor();
 //        PoolingNHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager(defaultConnectingIOReactor);

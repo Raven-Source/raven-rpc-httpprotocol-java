@@ -18,7 +18,7 @@ import java.util.function.*;
 public class PerformanceTest {
 
 
-    private final String domain = "http://192.168.2.80:9002";
+    private final String domain = "http://127.0.0.1:9002";
     private final String DEFAULT_ENCODING = Charset.defaultCharset()
             .name();
 

@@ -44,7 +44,7 @@ public class RpcHttpClientAsyncImplTest {
         try {
             future.get();
         } catch (ExecutionException ex) {
-            throw ex.getCause();
+            throw ex.getCause();   //异常原因（内部异常）
         }
     }
 

@@ -163,7 +163,12 @@ public class RpcHttpClientImpl
     private CloseableHttpClient initHttpClient() {
 
         HttpClientBuilder builder = HttpClientBuilder.create().setDefaultHeaders(_defaultHeaders);
-        RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(_timeout).setConnectionRequestTimeout(_timeout).build();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(_timeout)
+                .setConnectionRequestTimeout(_timeout)
+                .setSocketTimeout(_timeout)
+                .build();
+
         builder.setDefaultRequestConfig(requestConfig);
         builder.setMaxConnTotal(200);
         builder.setMaxConnPerRoute(200);
