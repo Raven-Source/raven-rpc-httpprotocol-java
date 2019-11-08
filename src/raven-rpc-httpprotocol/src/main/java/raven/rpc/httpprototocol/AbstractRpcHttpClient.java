@@ -84,7 +84,7 @@ public abstract class AbstractRpcHttpClient {
         if (contentData != null &&
                 (method.equals(HttpMethod.Post) || method.equals(HttpMethod.Put))
                 ) {
-            HttpEntity httpEntity = new ObjectHttpEntity(contentData, _mediaTypeFormatter);
+            HttpEntity httpEntity = new ObjectHttpEntity<TData>(contentData, _mediaTypeFormatter);
             httpRequest.setEntity(httpEntity);
         }
 
